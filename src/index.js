@@ -1,215 +1,114 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-
-import logo from './logo.png';
+import Button from 'react-bootstrap/Button';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import  get  from 'lodash/get';
+import  size  from 'lodash/size';
+import forEach from 'lodash/forEach';
+import  isEmpty  from 'lodash/isEmpty';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Table from 'react-bootstrap/Table';
 import * as serviceWorker from './serviceWorker';
+import { KeyObject } from 'crypto';
 
-
-function Square(props) {
-	if (props.value === 'X'){
-		return (
-    <button className="square button4" onClick={props.onClick}  >
-      <span>{props.value}</span>
-    </button>
-  );
-	}
-  return (
-    <button className="square button5" onClick={props.onClick}  >
-      <span>{props.value}</span>
-    </button>
-  );
-}
-
-function Rules(props){
-	return (
-	<div className="popup" onClick={props.onClick}  value={props.value}>
-	RULES
-      <span class="popuptext" id="myPopup">Two players take turns to unlock numbers hidden inside boxes. The one with maximum score after all the boxes have been opened, wins!</span>
-    
-	</div>
-	);
-}
-var scoreA = 0;
-var scoreB = 0;
-var sb = Array(8).fill(0);
-var movesleft = 8;
-class Board extends React.Component {
+export class Covid extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill(null),
-      xIsNext: true,
+			covidData: {}
     };
-  }
-
-  handleClick(i) {
-    const squares = this.state.squares.slice();
-    if (calculateWinner(squares) || squares[i]) {
-      return;
-    }
-    squares[i] = this.state.xIsNext ? sb[i] : sb[i];
-	if(this.state.xIsNext == 0){
-		scoreB = (scoreB*1.0 + (sb[i]*1.0));
 	}
-	else{
-		scoreA = ((1.0*scoreA) + (sb[i]*1.0));
-	}
-	movesleft = (movesleft*1.0)-1;
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext,
-    });
-  }
-  
-  handleRules(){
-	  var popup = document.getElementById("myPopup");
-  popup.classList.toggle("show");
-  }
 
-  renderSquare(i) {
-	 if (sb[i]){
-		 const squares = this.state.squares.slice();
-		 if (squares[i]){
-			 return (
-		  <Square
-			value={squares[i]}
-			onClick={() => this.handleClick(i)}
-		  />
-		);
-		 }
-		 return (
-		  <Square
-			value='X'
-			onClick={() => this.handleClick(i)}
-		  />
-		);
-	 }
-	const min = 1;
-    const max = 100;
-    const rand = min + Math.random() * (max - min);
-	sb[i]=rand.toFixed(0);
+	getTableBody() {
+		let tableData = [];
+		forEach(this.state.covidData, (data, key) => {
+			tableData.push(
+				<tr>
+					<td>{key+1}</td>
+					<td>{data.country}</td>
+					<td>{data.cases}</td>
+					<td>{data.deaths}</td>
+					<td>{data.recovered}</td>
+				</tr>
+			);
+	});
+		return tableData;
+	}
 	
-    return (
-      <Square
-        value='X'
-        onClick={() => this.handleClick(i)}
-      />
-    );
-  }
+	getHeader() {
+		return(
+			<div>
+				<Container fluid="md">
+					<Row>
+						<Col>CoronaVirus Tracker</Col>
+					</Row>
+				</Container>
+				<div className = "covid__table">
+				<Table striped bordered hover >
+				 <thead>
+					<tr>
+						<th>#</th>
+						<th>Country</th>
+						<th>Total Cases</th>
+						<th>Recoverd</th>
+						<th>Deaths</th>
+					</tr>
+				 </thead>
+				 <tbody>
+					 {this.getTableBody()}
+				 </tbody>
+				</Table>
+				</div>
+			</div>
+		);
+	}
   
-  renderrules(winner){
-	  if(winner){
-		  return (
-		<Rules
-		onClick = {() => this.handleRules()}
-		value=''
-			/>
-	  );
-	  }
+  render(){
+		
+		/*let options = [];
+		if (!isEmpty(covid)) {
+			forEach(covid, (data, value) => {
+					console.log(data, value);
+					console.log("jell");
+			});
+		}*/
+		
 	  return (
-		<Rules
-		value='Rules'
-		onClick = {() => this.handleRules()}
-			/>
-	  );
-  }
-
-  render() {
-    const winner = calculateWinner(this.state.squares);
-    let status;
-	let gamet = "PLAY THE SABRE GAME";
-	let abc = 'score A: '+scoreA + ' B: '+scoreB;;
-    if (winner) {
-		if(winner === 'C'){
-			status = "Match is Drawn";
-		}
-		else{
-			status = 'Result: ' + winner+' wins';
-		}
-    } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'A' : 'B');
-    }
-	
-
-    return (
-        
-      <div class="board">
-	  <header class="he">
-          <img src={logo} alt="logo" />
-        </header>
-		<div className="gamet"> {gamet} </div>
-        <div className="status">{status}</div>
-		<div className="abc"> {abc} </div>
-        <div className="board-row">
-		<br />
-		<br />
-		<br />
-		<br />
-		<br />
-		<br />
-		<center>
-			{this.renderrules(winner)}
-			</center>
-			
-			<br />
-			<br />
-			<center>
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-		  {this.renderSquare(3)}
-			{this.renderSquare(4)}
-			{this.renderSquare(5)}
-			{this.renderSquare(6)}
-			{this.renderSquare(7)}
-			</center>
-		  <br />
-		  <br />
-        </div>
-      </div>
+			<div className="covid__body">
+				{this.getHeader()}
+				
+			</div>
     );
-  }
-}
-
-class Game extends React.Component {
+	}
 	componentDidMount(){
-    document.title = "Sabre Game"
-  }
-  render() {
-    return (
-      <div className="game">
-        <div className="game-board">
-          <Board />
-        </div>
-      </div>
-    );
+		document.title = "Covid Update";
+		/*fetch('https://pomber.github.io/covid19/timeseries.json')
+		.then(results => {
+				return results.json();
+		}).then(data => {
+			this.setState({
+				covidData: data
+			});
+		});*/
+
+		fetch('https://coronavirus-19-api.herokuapp.com/countries')
+		.then(results => {
+				return results.json();
+		}).then(data => {
+			this.setState({
+				covidData: data
+			});
+			console.log(data);
+		});
   }
 }
-
-// ========================================
 
 ReactDOM.render(
-  <Game />,
+  <Covid />,
   document.getElementById('root')
 );
 
-function calculateWinner(squares) {
-	if( movesleft === 0){
-		if(scoreA > scoreB){
-			return 'A';
-		}
-		else if (scoreA === scoreB){
-			return 'C';
-		}
-		else{
-			return 'B';
-		}
-	}
-	return null;
-}
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: http://bit.ly/CRA-PWA
 serviceWorker.unregister();
