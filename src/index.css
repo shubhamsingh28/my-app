@@ -7,7 +7,6 @@
 .covid__body {
   background-color: aliceblue;
   height: 100%;
-  text-align: center;
 }
 
 .covid__table {
@@ -15,4 +14,18 @@
   margin-left: 10%;
   margin-right: 10%;
   margin-top: 5%;
+}
+
+.covid__table-header {
+  font-size: xx-large !important;
+  width: 100%;
+}
+
+.covid__full-data-body {
+  text-align: center;
+}
+
+.covid__full-data-body .accordion {
+  font-weight: bolder;
+  font-size: x-large;
 }
